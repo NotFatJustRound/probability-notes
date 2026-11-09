@@ -1,0 +1,18 @@
+版权与许可
+
+本仓库的笔记正文（chapters_zh/ 下各 .tex、README 与笔记性文字）由 不胖只是圆 撰写，
+采用知识共享 署名-非商业性使用 4.0 国际许可协议（CC BY-NC 4.0）发布。
+协议全文：https://creativecommons.org/licenses/by-nc/4.0/legalcode.zh-hans
+
+内容与结构依据下列课程材料整理，这些材料的著作权归原权利人所有，不随本仓库授权：
+
+- 西湖大学本科生课程《概率论与数理统计》教学大纲及教学日历（V3.0）
+- 该课程配套课件 Chapter 1: Introduction to Statistics、Chapter 2: Descriptive Statistics
+  等（Bai Lin，Westlake University，Fall 2026）
+
+课件中的定理陈述、表格数字与例题数据被保留下来用于对照复习；凡是对它们的改写、推导补全
+和「易踩的地方」一类评注，均属笔记作者的原创表达。
+
+版式文件 probability.cls 为本人按个人需要所写，同随 CC BY-NC 4.0 授权。
+
+如需将本笔记用于商业用途，请自行确认所引用课程材料是否允许，或联系课程任课教师。
