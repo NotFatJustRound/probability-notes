@@ -1,0 +1,195 @@
+\section{多维随机变量}
+
+前两章一次只盯一个数。可现实里的观测往往成组出现：打一枪要记横坐标和纵坐标，量一个人要记身高和体重。要描述这种事，就得把样本点映到一对数 $(X,Y)$ 上，并且回答一个新的问题——这两个分量之间有没有牵连。这一步迈出去，概率论才真正开始处理“几个量一起变”的问题，后面的期望、协方差、极限定理也都依赖这里的语言。
+
+\subsection{联合分布与边缘分布}
+
+\begin{definition}[联合分布函数]
+设 $(X,Y)$ 是二维随机变量，称
+\[
+F(x,y)=P\{X\le x,\; Y\le y\},\qquad (x,y)\in\mathbb{R}^2
+\]
+为 $(X,Y)$ 的联合分布函数。
+\end{definition}
+
+它和一元分布函数一样，是“把整块左下角区域圈起来的概率”。由此可以直接读出几条性质：对每个变量单调不减；$F(-\infty,y)=F(x,-\infty)=0$，$F(+\infty,+\infty)=1$；对每个变量右连续；并且对 $x_1<x_2,\ y_1<y_2$ 有
+\[
+F(x_2,y_2)-F(x_2,y_1)-F(x_1,y_2)+F(x_1,y_1)\ge 0 ,
+\]
+这最后一条其实就是“矩形区域上的概率非负”，一元情形写不出这种约束，它是二维才有的。
+
+按取值特点分两类。
+
+\begin{definition}[二维离散型]
+若 $(X,Y)$ 只取有限或可列个点 $(x_i,y_j)$，称其为离散型，并称
+\[
+p_{ij}=P\{X=x_i,\;Y=y_j\},\qquad i,j=1,2,\dots
+\]
+为联合分布列，满足 $p_{ij}\ge 0$ 且 $\sum_i\sum_j p_{ij}=1$。
+\end{definition}
+
+\begin{definition}[二维连续型]
+若存在非负可积函数 $f(x,y)$，使得
+\[
+F(x,y)=\int_{-\infty}^{x}\!\!\int_{-\infty}^{y} f(u,v)\,\mathrm{d}u\,\mathrm{d}v ,
+\]
+则称 $(X,Y)$ 为连续型，$f$ 称为联合概率密度。此时 $f$ 在连续点上是 $F$ 的混合偏导，且
+\[
+P\{(X,Y)\in D\}=\iint_D f(x,y)\,\mathrm{d}x\,\mathrm{d}y .
+\]
+\end{definition}
+
+注意把“曲线下的面积”换成“曲面下的体积”，是一元到二元的全部区别；密度本身仍不是概率，它可以大于 $1$，这一点到二维更容易被忘掉。
+
+只关心其中一个分量时，另一个分量取遍所有值就行：
+
+\begin{proposition}[边缘分布]
+设 $(X,Y)$ 的联合分布函数为 $F$，则
+\[
+F_X(x)=F(x,+\infty),\qquad F_Y(y)=F(+\infty,y).
+\]
+离散情形 $p_{i\cdot}=\sum_j p_{ij}$，$p_{\cdot j}=\sum_i p_{ij}$；连续情形
+\[
+f_X(x)=\int_{-\infty}^{+\infty} f(x,y)\,\mathrm{d}y,\qquad
+f_Y(y)=\int_{-\infty}^{+\infty} f(x,y)\,\mathrm{d}x .
+\]
+\end{proposition}
+
+\begin{example}[圆上的均匀分布]
+设 $(X,Y)$ 在单位圆 $D=\{(x,y):x^2+y^2\le 1\}$ 上服从均匀分布，求两个边缘密度。
+\end{example}
+
+均匀意味着密度是常数。圆面积是 $\pi$，所以 $f(x,y)=1/\pi$（在 $D$ 内），于是
+\[
+f_X(x)=\int_{-\sqrt{1-x^2}}^{\sqrt{1-x^2}}\frac{1}{\pi}\,\mathrm{d}y
+=\frac{2\sqrt{1-x^2}}{\pi},\qquad |x|\le 1 .
+\]
+这条曲线在 $0$ 处取到最大值 $2/\pi$，两端降到 $0$——边缘是“中间鼓”的，不是均匀的。原因很直白：$x$ 靠近 $0$ 时，竖直方向能切到的弦更长。人容易把“平面上均匀”错当成“每个坐标均匀”，这是第一个坑。
+
+由此还能推出一个更重要的事实：联合分布决定边缘，反过来不成立。同一个 $f_X$ 与 $f_Y$ 可以来自完全不同的联合分布——圆上的均匀分布，和“正方形上均匀但混进去一点依赖关系”的分布，边缘可以一模一样。所以只拿到两个边缘，永远拼不回联合；缺的那部分信息，正是下一节的独立性。
+
+\subsection{独立性}
+
+\begin{definition}[独立性]
+若对任意实数 $x,y$ 都有
+\[
+F(x,y)=F_X(x)F_Y(y),
+\]
+则称 $X$ 与 $Y$ 相互独立。
+\end{definition}
+
+\begin{proposition}[独立的等价刻画]
+离散情形：$p_{ij}=p_{i\cdot}p_{\cdot j}$ 对一切 $i,j$ 成立；
+连续情形：$f(x,y)=f_X(x)f_Y(y)$ 几乎处处成立。
+\end{proposition}
+
+这里“几乎处处”不是文字游戏：密度只在相差一个零测集的意义下唯一，个别点改值不影响任何概率，硬要求处处相等是没有意义的苛刻。
+
+\begin{proposition}[可分离密度的判据]
+若 $f(x,y)=g(x)h(y)$，且 $(X,Y)$ 的支撑集是一个边平行于坐标轴的矩形，则 $X$ 与 $Y$ 独立。
+\end{proposition}
+
+理由：$f_X(x)=g(x)\int h$，$f_Y(y)=h(y)\int g$，常数因子在归一化时被吃掉。但支撑必须成矩形，否则“$x$ 大时 $y$ 只能小”这种约束本身携带了依赖信息，一处积分限里藏着另一个变量，独立性就断了。这是第二个坑。
+
+另外把两件事分开记：独立说的是“分布互不影响”，不相关说的是“线性关系为零”。独立 $\Rightarrow$ 不相关，反之不成立。
+
+\subsection{条件分布}
+
+有了边缘与联合，就可以问：已知 $X$ 取某个值，$Y$ 的分布变成什么。
+
+\begin{definition}[离散型条件分布]
+当 $p_{i\cdot}>0$ 时，称
+\[
+P\{Y=y_j\mid X=x_i\}=\frac{p_{ij}}{p_{i\cdot}},\qquad j=1,2,\dots
+\]
+为 $X=x_i$ 条件下 $Y$ 的条件分布列。
+\end{definition}
+
+\begin{definition}[连续型条件密度]
+当 $f_X(x)>0$ 时，称
+\[
+f_{Y\mid X}(y\mid x)=\frac{f(x,y)}{f_X(x)}
+\]
+为 $X=x$ 条件下 $Y$ 的条件密度。
+\end{definition}
+
+连续情形要坦白一件事：事件 $\{X=x\}$ 的概率是 $0$，这里的“条件”不是按 $P(A\mid B)$ 的定义算出来的，而是把“$X$ 落在 $x$ 附近”取极限得到的。它是定义，不是推论。
+
+条件密度把全概率公式也搬了过来：
+
+\begin{proposition}[连续型全概率公式]
+\[
+f_Y(y)=\int_{-\infty}^{+\infty} f_{Y\mid X}(y\mid x)\,f_X(x)\,\mathrm{d}x .
+\]
+\end{proposition}
+
+\begin{example}[先抽长度，再抽位置]
+设 $X\sim U(0,1)$；给定 $X=x$ 时，$Y$ 在 $(0,x)$ 上均匀分布。求 $f_Y(y)$ 与 $E[Y\mid X]$。
+\end{example}
+
+先写条件密度：$f_{Y\mid X}(y\mid x)=1/x$（$0<y<x$）。代入全概率公式，注意积分限由 $y<x$ 给出，
+\[
+f_Y(y)=\int_{y}^{1}\frac{1}{x}\,\mathrm{d}x=-\ln y,\qquad 0<y<1 .
+\]
+这个边缘在 $y\to 0^{+}$ 时发散——区域越靠近原点越“宽”，密度因此堆在低端。条件期望则是直接对均匀分布取中点：$E[Y\mid X=x]=x/2$。$E[Y\mid X]$ 本身是随机变量，它等于 $X/2$，取期望就回到 $E[Y]=1/4$，和积分结果一致，可以当自检。
+
+\subsection{随机变量函数的分布}
+
+最常用的一类问题是求 $Z=g(X,Y)$ 的分布。
+
+\begin{proposition}[和的分布]
+设 $X$ 与 $Y$ 独立，密度分别为 $f_X,f_Y$，则 $Z=X+Y$ 的密度为
+\[
+f_Z(z)=\int_{-\infty}^{+\infty} f_X(x)\,f_Y(z-x)\,\mathrm{d}x
+=\int_{-\infty}^{+\infty} f_X(z-y)\,f_Y(y)\,\mathrm{d}y .
+\]
+\end{proposition}
+
+这就是卷积。推导只有一步：先写 $F_Z(z)=P\{X+Y\le z\}=\iint_{x+y\le z} f_X(x)f_Y(y)\,\mathrm{d}x\,\mathrm{d}y$，再对 $z$ 求导，积分上限带进来的正好是 $f_Y(z-x)$。
+
+\begin{example}[两个均匀分布相加]
+设 $X,Y$ 独立同分布于 $U(0,1)$，求 $Z=X+Y$ 的密度。
+\end{example}
+
+被积函数 $f_X(x)f_Y(z-x)$ 要同时满足 $0<x<1$ 与 $0<z-x<1$，即 $\max(0,z-1)<x<\min(1,z)$。于是
+\[
+f_Z(z)=
+\begin{cases}
+z, & 0\le z<1,\\
+2-z, & 1\le z\le 2,\\
+0, & \text{其他}.
+\end{cases}
+\]
+三角形，顶点在 $z=1$。两段必须分开写：只写一段是这套题最常见的错法，因为积分区间在 $z=1$ 处换了形状。
+
+\begin{proposition}[正态分布的可加性]
+若 $X\sim N(\mu_1,\sigma_1^2)$ 与 $Y\sim N(\mu_2,\sigma_2^2)$ 独立，则
+\[
+X+Y\sim N(\mu_1+\mu_2,\ \sigma_1^2+\sigma_2^2).
+\]
+\end{proposition}
+
+用卷积硬算要配方，麻烦但不难；有了特征函数一行就能出。这里先记结论，等第五章的工具齐了再回头补证明。
+
+\begin{proposition}[二维随机变量函数的分布]
+设 $(X,Y)$ 有联合密度 $f_{X,Y}$，变换 $(u,v)=g(x,y)$ 是一一映射、连续可微且雅可比行列式 $J=\partial(x,y)/\partial(u,v)$ 不为零，则 $(U,V)=g(X,Y)$ 的联合密度为
+\[
+f_{U,V}(u,v)=f_{X,Y}\big(g^{-1}(u,v)\big)\,|J| .
+\]
+\end{proposition}
+
+\begin{example}[最大值与最小值]
+设 $X_1,\dots,X_n$ 独立同分布，分布函数为 $F$。记 $M=\max_i X_i$，$N=\min_i X_i$，求两者的分布函数。
+\end{example}
+
+最大值不超过 $x$，等价于每个都不超过 $x$：
+\[
+F_M(x)=P\{X_1\le x,\dots,X_n\le x\}=\big[F(x)\big]^n .
+\]
+最小值大于 $x$，等价于每个都大于 $x$：
+\[
+F_N(x)=1-P\{N\le x\}=1-\big[1-F(x)\big]^n .
+\]
+这里用“反面”比正面省事得多。$M$ 与 $N$ 联合分布不能这样简单相乘，那需要另一套计算，先不展开。
+
+落在这一章的错，多数是三个来源：卷积要求独立，独立性不是随便就能假设的；变量替换时雅可比要取绝对值；以及积分区间随参数换了形状却忘了分段。前两个是概念，第三个是手滑，都得靠把区域画出来治。
