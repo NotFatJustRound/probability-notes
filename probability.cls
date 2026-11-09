@@ -38,6 +38,8 @@
 \definecolor{propborder}{rgb}{0.1, 0.5, 0.9}
 \definecolor{exmpshade}{rgb}{0.9, 1.0, 0.9}
 \definecolor{exmpborder}{rgb}{0.2, 0.7, 0.2}
+\definecolor{rmkshade}{rgb}{0.95, 0.95, 0.95}
+\definecolor{rmkborder}{rgb}{0.55, 0.55, 0.55}
 \definecolor{sepline}{rgb}{0.6, 0.2, 0.8}
 
 \hypersetup{
@@ -54,6 +56,8 @@
   \newcommand{\probtheoremname}{定理}
   \newcommand{\probpropositionname}{命题}
   \newcommand{\probexamplename}{例题}
+  \newcommand{\probremarkname}{注}
+  \newcommand{\probproofname}{证明}
   \newcommand{\probcontentsname}{目录}
   \newcommand{\probcolon}{：}
 \else
@@ -61,6 +65,8 @@
   \newcommand{\probtheoremname}{Theorem}
   \newcommand{\probpropositionname}{Proposition}
   \newcommand{\probexamplename}{Example}
+  \newcommand{\probremarkname}{Remark}
+  \newcommand{\probproofname}{Proof}
   \newcommand{\probcontentsname}{Contents}
   \newcommand{\probcolon}{:}
 \fi
@@ -83,11 +89,13 @@
 \newcounter{thmcount}[subsection]
 \newcounter{propcount}[subsection]
 \newcounter{exmpcount}[subsection]
+\newcounter{rmkcount}[subsection]
 
 \renewcommand{\thedefncount}{\thesection.\arabic{subsection}.\arabic{defncount}}
 \renewcommand{\thethmcount}{\thesection.\arabic{subsection}.\arabic{thmcount}}
 \renewcommand{\thepropcount}{\thesection.\arabic{subsection}.\arabic{propcount}}
 \renewcommand{\theexmpcount}{\thesection.\arabic{subsection}.\arabic{exmpcount}}
+\renewcommand{\thermkcount}{\thesection.\arabic{subsection}.\arabic{rmkcount}}
 
 \newenvironment{definition}[1][]{%
   \stepcounter{defncount}%
@@ -135,6 +143,26 @@
 }{%
   \vspace{2pt}%
   \end{adjustwidth}\endMakeFramed
+}
+
+\newenvironment{remark}[1][]{%
+  \stepcounter{rmkcount}%
+  \prob@framestyle{rmkshade}{rmkborder}%
+  \textbf{\probremarkname\ \thermkcount\probcolon\ \ifstrempty{#1}{}{#1}}%
+  \vspace{4pt}%
+  \color{sepline}\hrule height 0.5pt width \linewidth
+  \vspace{6pt}%
+}{%
+  \vspace{2pt}%
+  \end{adjustwidth}\endMakeFramed
+}
+
+% ---------------- 证明：不编号、不带框 ----------------
+\newenvironment{proof}[1][]{%
+  \par\medskip\noindent
+  \textbf{\ifstrempty{#1}{\probproofname}{\probproofname\probcolon\ #1}}\quad%
+}{%
+  \hfill$\blacksquare$\par\medskip
 }
 
 \endinput
