@@ -30,25 +30,46 @@ jobs:
           name: probability-notes-pdf
           path: Probability_zh.pdf
 
-      # 固定 release：pdf-latest，每次 main 更新就覆盖同名附件，
-      # 下载链接一直不变，打开就是直接下 PDF，不用解 zip。
+      # 两个 release：
+      #   1. v<VERSION>  —— 带版本号的正式版，版本号一改就新开一个页面，方便回头找旧版
+      #   2. pdf-latest  —— 滚动更新的固定链接，永远是最新编译结果
+      # 两者都覆盖同名附件，下载链接不变，打开直接下 PDF，不用解 zip。
       - name: Publish PDF to release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG: pdf-latest
         run: |
           set -euo pipefail
-          if gh release view "$TAG" > /dev/null 2>&1; then
-            gh release upload "$TAG" Probability_zh.pdf --clobber
+          VER="$(tr -d ' \r\n' < VERSION)"
+          STAMP="$(date -u '+%Y-%m-%d %H:%M UTC')"
+          SHORT="${GITHUB_SHA:0:7}"
+          BODY="由 build-pdf.yml 自动编译（xelatex + fandol）。
+          版本 v${VER} · commit ${SHORT} · ${STAMP}"
+
+          # 版本化 release
+          if gh release view "v${VER}" > /dev/null 2>&1; then
+            gh release upload "v${VER}" Probability_zh.pdf --clobber
+            gh release edit "v${VER}" --notes "$BODY" --latest
           else
-            gh release create "$TAG" Probability_zh.pdf \
+            gh release create "v${VER}" Probability_zh.pdf \
+              --title "概率论与数理统计笔记 v${VER}" \
+              --notes "$BODY" \
+              --target "$GITHUB_SHA" \
+              --latest
+          fi
+
+          # 滚动 latest 链接
+          if gh release view pdf-latest > /dev/null 2>&1; then
+            gh release upload pdf-latest Probability_zh.pdf --clobber
+          else
+            gh release create pdf-latest Probability_zh.pdf \
               --title "最新编译版 PDF" \
-              --notes "由 build-pdf.yml 自动编译（xelatex + fandol），每次 main 更新覆盖。" \
+              --notes "滚动更新，永远指向最新一次编译。" \
               --target "$GITHUB_SHA"
           fi
-          gh release edit "$TAG" \
-            --notes "由 build-pdf.yml 自动编译（xelatex + fandol），每次 main 更新覆盖同名附件。
-          最后更新：commit ${GITHUB_SHA:0:7}，$(date -u '+%Y-%m-%d %H:%M UTC')"
-          # 让 tag 跟到最新提交，release 页面显示的就是当前版本源码
-          git tag -f "$TAG" "$GITHUB_SHA"
-          git push -f origin "refs/tags/$TAG"
+          gh release edit pdf-latest --notes "滚动更新，永远指向最新一次编译。
+          当前 v${VER} · commit ${SHORT} · ${STAMP}"
+
+          # 两个 tag 都跟到最新提交，release 页显示的就是对应源码
+          git tag -f "v${VER}" "$GITHUB_SHA"
+          git tag -f pdf-latest "$GITHUB_SHA"
+          git push -f origin "refs/tags/v${VER}" "refs/tags/pdf-latest"
