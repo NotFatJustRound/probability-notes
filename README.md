@@ -4,6 +4,14 @@
 
 作者：不胖只是圆。
 
+## 来源与版权
+
+内容依据西湖大学本科生课程《概率论与数理统计》的教学大纲（V3.0）与配套课件（Bai Lin，Westlake University，Fall 2026）整理。课件与大纲的著作权归原权利人，本仓库只是把上课的东西重新写了一遍笔记。
+
+笔记正文（`chapters_zh/*.tex`、README、`probability.cls`）以 [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) 授权，可署名转载、不得商用。细节见 [LICENSE](LICENSE)。
+
+课件里的定理陈述、表格数字和例题数据保留原值，方便对着核答案；推导补全、评注和「本章容易踩的地方」都是笔记自己的话。
+
 ## 编译
 
 ```bash
@@ -24,6 +32,7 @@ probability-notes/
 ├── chapters_zh/         章源文件，chap_0x.tex
 ├── build/               编译产物，不进 Git
 ├── notes/               旧 markdown 版，已归档
+├── LICENSE
 └── README.md
 ```
 
