@@ -5,12 +5,17 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Compile with XeLaTeX
         uses: xu-cheng/latex-action@v3
@@ -19,8 +24,31 @@ jobs:
           latexmk_use_xelatex: true
           extra_packages: fandol
 
-      - name: Upload PDF
+      - name: Upload PDF artifact
         uses: actions/upload-artifact@v4
         with:
           name: probability-notes-pdf
           path: Probability_zh.pdf
+
+      # 固定 release：pdf-latest，每次 main 更新就覆盖同名附件，
+      # 下载链接一直不变，打开就是直接下 PDF，不用解 zip。
+      - name: Publish PDF to release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: pdf-latest
+        run: |
+          set -euo pipefail
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release upload "$TAG" Probability_zh.pdf --clobber
+          else
+            gh release create "$TAG" Probability_zh.pdf \
+              --title "最新编译版 PDF" \
+              --notes "由 build-pdf.yml 自动编译（xelatex + fandol），每次 main 更新覆盖。" \
+              --target "$GITHUB_SHA"
+          fi
+          gh release edit "$TAG" \
+            --notes "由 build-pdf.yml 自动编译（xelatex + fandol），每次 main 更新覆盖同名附件。
+          最后更新：commit ${GITHUB_SHA:0:7}，$(date -u '+%Y-%m-%d %H:%M UTC')"
+          # 让 tag 跟到最新提交，release 页面显示的就是当前版本源码
+          git tag -f "$TAG" "$GITHUB_SHA"
+          git push -f origin "refs/tags/$TAG"
