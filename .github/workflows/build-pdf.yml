@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: build-pdf-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -68,6 +72,19 @@ jobs:
           fi
           gh release edit pdf-latest --notes "滚动更新，永远指向最新一次编译。
           当前 v${VER} · commit ${SHORT} · ${STAMP}"
+
+          # 这个提交如果动过 .github/workflows/，就别去挪 tag：
+          # GITHUB_TOKEN 没有 workflows 权限，把 tag 强推到含 workflow 改动的提交会被拒绝
+          # （refusing to allow a GitHub App to create or update workflow ... without workflows permission），
+          # 整个构建会红在最后一步。tag 停在最后一个干净提交上，release 附件照常更新。
+          RANGE_BASE="${{ github.event.before }}"
+          if [ -z "$RANGE_BASE" ] || [ "$RANGE_BASE" = "0000000000000000000000000000000000000000" ]; then
+            RANGE_BASE="$(git rev-parse HEAD~1 2>/dev/null || true)"
+          fi
+          if [ -n "$RANGE_BASE" ] && git diff --name-only "$RANGE_BASE" "$GITHUB_SHA" | grep -q '^\.github/workflows/'; then
+            echo "本次提交修改了 .github/workflows/，跳过 tag 更新（release 附件已更新）"
+            exit 0
+          fi
 
           # 两个 tag 都跟到最新提交，release 页显示的就是对应源码
           git tag -f "v${VER}" "$GITHUB_SHA"
