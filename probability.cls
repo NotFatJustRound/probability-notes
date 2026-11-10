@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{probability}[2026/11/09 Probability theory lecture notes class]
+\ProvidesClass{probability}[2026/11/10 Probability theory lecture notes class]
 
 % 中文默认，加 english 选项切成英文版
 \newif\ifprob@chinese
@@ -55,6 +55,8 @@
   \newcommand{\probdefinitionname}{定义}
   \newcommand{\probtheoremname}{定理}
   \newcommand{\probpropositionname}{命题}
+  \newcommand{\probcorollaryname}{推论}
+  \newcommand{\problemmname}{引理}
   \newcommand{\probexamplename}{例题}
   \newcommand{\probremarkname}{注}
   \newcommand{\probproofname}{证明}
@@ -64,6 +66,8 @@
   \newcommand{\probdefinitionname}{Definition}
   \newcommand{\probtheoremname}{Theorem}
   \newcommand{\probpropositionname}{Proposition}
+  \newcommand{\probcorollaryname}{Corollary}
+  \newcommand{\problemmname}{Lemma}
   \newcommand{\probexamplename}{Example}
   \newcommand{\probremarkname}{Remark}
   \newcommand{\probproofname}{Proof}
@@ -88,17 +92,22 @@
 \newcounter{defncount}[subsection]
 \newcounter{thmcount}[subsection]
 \newcounter{propcount}[subsection]
+\newcounter{corcount}[subsection]
+\newcounter{lemcount}[subsection]
 \newcounter{exmpcount}[subsection]
 \newcounter{rmkcount}[subsection]
 
 \renewcommand{\thedefncount}{\thesection.\arabic{subsection}.\arabic{defncount}}
 \renewcommand{\thethmcount}{\thesection.\arabic{subsection}.\arabic{thmcount}}
 \renewcommand{\thepropcount}{\thesection.\arabic{subsection}.\arabic{propcount}}
+\renewcommand{\thecorcount}{\thesection.\arabic{subsection}.\arabic{corcount}}
+\renewcommand{\thelemcount}{\thesection.\arabic{subsection}.\arabic{lemcount}}
 \renewcommand{\theexmpcount}{\thesection.\arabic{subsection}.\arabic{exmpcount}}
 \renewcommand{\thermkcount}{\thesection.\arabic{subsection}.\arabic{rmkcount}}
 
 \newenvironment{definition}[1][]{%
-  \stepcounter{defncount}%
+  \refstepcounter{defncount}%
+  \protected@edef\@currentlabel{\thedefncount}%
   \prob@framestyle{defshade}{defborder}%
   \textbf{\probdefinitionname\ \thedefncount\probcolon\ \ifstrempty{#1}{}{#1}}%
   \vspace{4pt}%
@@ -110,7 +119,8 @@
 }
 
 \newenvironment{theorem}[1][]{%
-  \stepcounter{thmcount}%
+  \refstepcounter{thmcount}%
+  \protected@edef\@currentlabel{\thethmcount}%
   \prob@framestyle{thmshade}{thmborder}%
   \textbf{\probtheoremname\ \thethmcount\probcolon\ \ifstrempty{#1}{}{#1}}%
   \vspace{4pt}%
@@ -122,7 +132,8 @@
 }
 
 \newenvironment{proposition}[1][]{%
-  \stepcounter{propcount}%
+  \refstepcounter{propcount}%
+  \protected@edef\@currentlabel{\thepropcount}%
   \prob@framestyle{propshade}{propborder}%
   \textbf{\probpropositionname\ \thepropcount\probcolon\ \ifstrempty{#1}{}{#1}}%
   \vspace{4pt}%
@@ -133,8 +144,35 @@
   \end{adjustwidth}\endMakeFramed
 }
 
+\newenvironment{corollary}[1][]{%
+  \refstepcounter{corcount}%
+  \protected@edef\@currentlabel{\thecorcount}%
+  \prob@framestyle{propshade}{propborder}%
+  \textbf{\probcorollaryname\ \thecorcount\probcolon\ \ifstrempty{#1}{}{#1}}%
+  \vspace{4pt}%
+  \color{sepline}\hrule height 0.5pt width \linewidth
+  \vspace{6pt}%
+}{%
+  \vspace{2pt}%
+  \end{adjustwidth}\endMakeFramed
+}
+
+\newenvironment{lemma}[1][]{%
+  \refstepcounter{lemcount}%
+  \protected@edef\@currentlabel{\thelemcount}%
+  \prob@framestyle{propshade}{propborder}%
+  \textbf{\problemmname\ \thelemcount\probcolon\ \ifstrempty{#1}{}{#1}}%
+  \vspace{4pt}%
+  \color{sepline}\hrule height 0.5pt width \linewidth
+  \vspace{6pt}%
+}{%
+  \vspace{2pt}%
+  \end{adjustwidth}\endMakeFramed
+}
+
 \newenvironment{example}[1][]{%
-  \stepcounter{exmpcount}%
+  \refstepcounter{exmpcount}%
+  \protected@edef\@currentlabel{\theexmpcount}%
   \prob@framestyle{exmpshade}{exmpborder}%
   \textbf{\probexamplename\ \theexmpcount\probcolon\ \ifstrempty{#1}{}{#1}}%
   \vspace{4pt}%
@@ -146,7 +184,8 @@
 }
 
 \newenvironment{remark}[1][]{%
-  \stepcounter{rmkcount}%
+  \refstepcounter{rmkcount}%
+  \protected@edef\@currentlabel{\thermkcount}%
   \prob@framestyle{rmkshade}{rmkborder}%
   \textbf{\probremarkname\ \thermkcount\probcolon\ \ifstrempty{#1}{}{#1}}%
   \vspace{4pt}%
