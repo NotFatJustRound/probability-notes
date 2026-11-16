@@ -23,10 +23,22 @@ jobs:
         with:
           root_file: chap_05_sample.tex
           latexmk_use_xelatex: true
-          extra_packages: fandol pgf
+          extra_packages: fandol
 
       - name: Upload sample PDF
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: chap05-sample-pdf
           path: chap_05_sample.pdf
+
+      # 红的时候把 xelatex 的 log 也存下来，不然只能看到「某步失败」，等于没跑
+      - name: Upload compile log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: chap05-compile-log
+          path: |
+            chap_05_sample.log
+            chap_05_sample.blg
+          if-no-files-found: warn
