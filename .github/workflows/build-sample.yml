@@ -63,15 +63,16 @@ jobs:
               --prerelease
           fi
 
-      # xelatex 的 log 是压缩包里的文本，我这头取不到，就把错误摘录提交回分支当文件读。
-      # 注意 grep 在「一行错误都没匹配到」时返回 1，而本文件开了 pipefail，
-      # 所以那行管道要兜住，否则编译成功反而会把这个收尾步搞成红。
+      # 纯粹是给我取 xelatex 错误行用的脚手架：log 在 artifact 的 zip 里我读不到，
+      # 就把摘录提交回分支当文本文件读。编译绿了以后这一步没什么用，
+      # 所以它失败不该把整个构建染红（两次假红都撞在这里：并发 push 被拒）。
       - name: Publish error extract
         if: always()
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          set -euo pipefail
+          set -uo pipefail
           SKIP='[skip'" ci']"
           git config user.name "build-sample"
           git config user.email "build-sample@users.noreply.github.com"
@@ -92,4 +93,4 @@ jobs:
           } > chap05-build-report.md
           git add chap05-build-report.md
           git commit -m "chap_05: 更新编译错误摘录 $SKIP" || echo "无改动，跳过提交"
-          git push origin HEAD:chap05-sample
+          git push origin HEAD:chap05-sample || echo "push 被拒：多半是同一分支上另一个 run 先推了，不影响构建结论"
