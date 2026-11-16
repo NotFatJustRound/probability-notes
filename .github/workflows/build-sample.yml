@@ -1,7 +1,8 @@
 name: build-sample
 
 # 样章专用：只在 chap05-sample 分支上跑，验证 chap_05.tex 真能编出来。
-# 不发 release、不动 tag，主线 build-pdf.yml 一点没碰。
+# 不动主线 build-pdf.yml；PDF 挂到一个预发布 release 上滚动覆盖，
+# 因为 artifact 只能整包 zip 下载，而 release 附件点开就是 PDF。
 
 on:
   push:
@@ -42,9 +43,29 @@ jobs:
             chap_05_sample.blg
           if-no-files-found: warn
 
+      - name: Publish sample PDF to rolling pre-release
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          STAMP="$(date -u '+%Y-%m-%d %H:%M UTC')"
+          NOTES="chap05-sample 分支样章的编译结果，滚动覆盖，未并入主线。
+          commit ${GITHUB_SHA:0:7} · ${STAMP}"
+          if gh release view chap05-sample > /dev/null 2>&1; then
+            gh release upload chap05-sample chap_05_sample.pdf --clobber
+            gh release edit chap05-sample --notes "$NOTES"
+          else
+            gh release create chap05-sample chap_05_sample.pdf \
+              --title '样章 chap_05（分支构建，未并入主线）' \
+              --notes "$NOTES" \
+              --target "$GITHUB_SHA" \
+              --prerelease
+          fi
+
       # xelatex 的 log 是压缩包里的文本，我这头取不到，就把错误摘录提交回分支当文件读。
       # 注意 grep 在「一行错误都没匹配到」时返回 1，而本文件开了 pipefail，
-      # 所以那行管道要 || true，否则编译成功反而会把这个收尾步搞成红。
+      # 所以那行管道要兜住，否则编译成功反而会把这个收尾步搞成红。
       - name: Publish error extract
         if: always()
         env:
