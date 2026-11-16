@@ -268,7 +268,7 @@ h_i=\frac{r^{\,i}-1}{r^{\,N}-1}=\frac{1-r^{\,i}}{1-r^{\,N}} .
   \draw[black!70,line width=1.1pt] (0,0) -- (5,1);
   \node[font=\scriptsize,text=black!70] at (3.3,0.86) {$p=\tfrac12$：$\dfrac{i}{N}$};
   % 有偏局 p=0.45：h_i=(r^i-1)/(r^N-1)，r=11/9，N=5，r^N-1=1.72735
-  \draw[domain=0:5,smooth,variable=\t,sample=120,blue!60!black,line width=1.1pt]
+  \draw[domain=0:5,smooth,variable=\t,samples=120,blue!60!black,line width=1.1pt]
     plot ({\t},{(pow(1.22222,\t)-1)/1.72735});
   \foreach \t in {0,1,2,3,4,5}
     \fill[blue!60!black] (\t,{(pow(1.22222,\t)-1)/1.72735}) circle (1.1pt);
