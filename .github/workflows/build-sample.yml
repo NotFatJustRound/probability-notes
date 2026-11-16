@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -32,7 +32,6 @@ jobs:
           name: chap05-sample-pdf
           path: chap_05_sample.pdf
 
-      # 红的时候把 xelatex 的 log 也存下来，不然只能看到「某步失败」，等于没跑
       - name: Upload compile log
         if: always()
         uses: actions/upload-artifact@v4
@@ -42,3 +41,32 @@ jobs:
             chap_05_sample.log
             chap_05_sample.blg
           if-no-files-found: warn
+
+      # xelatex 的 log 是压缩包里的文本，我这头取不到，就把错误摘录提交回分支当文件读。
+      # commit message 里带 [skip ci]，不然这次提交自己又能触发一轮。
+      - name: Publish error extract
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          git config user.name "build-sample"
+          git config user.email "build-sample@users.noreply.github.com"
+          {
+            echo '# chap_05 编译摘录'
+            echo
+            echo 'commit '"${GITHUB_SHA:0:7}"
+            echo
+            echo '```'
+            if [ -f chap_05_sample.log ]; then
+              grep -n -E '^(l\.[0-9]+ |! |LaTeX Error|Package .* Error|Fatal |! Undefined|! Missing)' chap_05_sample.log | head -n 150
+              echo '--- tail ---'
+              tail -n 25 chap_05_sample.log
+            else
+              echo '没有 chap_05_sample.log（编译步没跑起来？）'
+            fi
+            echo '```'
+          } > chap05-build-report.md
+          git add chap05-build-report.md
+          git commit -m "chap_05: 更新编译错误摘录 [skip ci]" || echo "无改动，跳过提交"
+          git push origin HEAD:chap05-sample
