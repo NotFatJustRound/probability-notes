@@ -36,7 +36,7 @@ L^2(\Omega,\mathcal{F},P)=\Big\{X:\Omega\to\mathbb{R}\ \text{$\mathcal{F}$-可�
 $\|X-Y\|_2^2$ & 均方误差 $E[(X-Y)^2]$\\
 $X\perp Y$（$\langle X,Y\rangle=0$） & $E[XY]=0$\\
 $X-\mu_X\perp Y-\mu_Y$ & $\mathrm{Cov}(X,Y)=0$\\
-$\{X=c\}$ 的子空间 & 常数（无信息可依据）\\
+常数子空间 $\{X\equiv c\}$ & 手里一点信息都没有\\
 子空间 $L^2(\Omega,\mathcal{G},P)$ & 「只依赖 $\mathcal{G}$ 里的信息」\\
 \hline
 \end{tabular}
@@ -146,7 +146,7 @@ E\big[(X-\mu)^2\mid\mathcal{G}\big]
 定理里那个 $\arg\min$ 是本章最实用的部分：给定能观测的信息 $\mathcal{G}$，均方误差最小的预测就是条件期望，且最小均方误差恰好等于 $E[\mathrm{Var}(X\mid\mathcal{G})]$——块内散布就是代价的下界，谁来做预测都绕不过去。
 
 \begin{example}[只能看见粗粒度时]
-设 $X$ 是某芯片的失效时间，你测不到它本身，只测得到「它属于哪一批次」。此时任何预测都必须是「批次的函数」，也就是 $L^2(\mathcal{G})$ 里的元素，于是最优预测只能是同批次的平均失效时间。想改进预测，唯一的路是把 $\mathcal{G}$ 加大（多测一个量）；在同样的观测下换算法、调权重都不可能造成second-order的改进。
+设 $X$ 是某芯片的失效时间，你测不到它本身，只测得到「它属于哪一批次」。此时任何预测都必须是「批次的函数」，也就是 $L^2(\mathcal{G})$ 里的元素，于是最优预测只能是同批次的平均失效时间。想改进预测，唯一的路是把 $\mathcal{G}$ 加大（多测一个量）；观测不变时换算法、调权重，都不会让均方误差再降下这一点。
 \end{example}
 
 顺着芯片说一件容易被规格书糊过去的事。
@@ -168,7 +168,7 @@ $Y=1-X$（仅 $p=\frac12$ 可行） & 刻意反相的冗余设计 & $0$\\
 \end{example}
 
 \begin{remark}
-规格书描述的是边缘，风险算的是联合。「两枚芯片规格完全相同」这句话里不含任何关于独立性的信息， independence 是一个额外的、通常并不成立的假设——同批次的两枚芯片往往正相关，而「冗余设计降低了风险」这件事只有在负相关时才真的成立。这是「$\mathrm{Var}(X+Y)=\mathrm{Var}(X)+\mathrm{Var}(Y)$」滥用的一处分岔口，也是上一章耦合表在 $0/1$ 上的重演。
+规格书描述的是边缘，风险算的是联合。「两枚芯片规格完全相同」这句话里不含任何关于独立性的信息；独立是一个额外的、通常并不成立的假设——同批次的两枚芯片往往正相关，而「冗余设计降低了风险」这件事只有在负相关时才真的成立。这是「$\mathrm{Var}(X+Y)=\mathrm{Var}(X)+\mathrm{Var}(Y)$」滥用的一处分岔口，也是上一章耦合表在 $0/1$ 上的重演。
 \end{remark}
 
 \subsection{路径图上的调和函数：赌徒破产}
@@ -267,11 +267,11 @@ h_i=\frac{r^{\,i}-1}{r^{\,N}-1}=\frac{1-r^{\,i}}{1-r^{\,N}} .
   % 公平局：直线 i/N
   \draw[black!70,line width=1.1pt] (0,0) -- (5,1);
   \node[font=\scriptsize,text=black!70] at (3.3,0.86) {$p=\tfrac12$：$\dfrac{i}{N}$};
-  % 有偏局 p=0.45：h_i=(r^i-1)/(r^N-1), r=11/9, N=5
+  % 有偏局 p=0.45：h_i=(r^i-1)/(r^N-1)，r=11/9，N=5，r^N-1=1.72735
   \draw[domain=0:5,smooth,variable=\t,sample=120,blue!60!black,line width=1.1pt]
-    plot ({\t},{(pow(1.22222,\t)-1)/1.72754});
+    plot ({\t},{(pow(1.22222,\t)-1)/1.72735});
   \foreach \t in {0,1,2,3,4,5}
-    \fill[blue!60!black] (\t,{(pow(1.22222,\t)-1)/1.72754}) circle (1.1pt);
+    \fill[blue!60!black] (\t,{(pow(1.22222,\t)-1)/1.72735}) circle (1.1pt);
   \node[font=\scriptsize,text=blue!55!black,align=left] at (1.05,0.52)
     {$p=0.45$：$\frac{1-r^{i}}{1-r^{N}}$，$r=\frac{q}{p}$};
 \end{tikzpicture}
@@ -309,7 +309,7 @@ E[S_{n+1}\mid\mathcal{F}_n]=S_n+E[\text{第 }n+1\text{ 局}]=S_n+0=S_n .
 若 $\{M_n\}$ 是鞅，$T$ 是停时（「何时收手」只由已发生的事决定），则对每个 $n$，$E[M_{T\wedge n}]=E[M_0]$。
 \end{proposition}
 
-证明思路是鞅性质对 $T\wedge n$ 归纳：停时之所以不能偷看未来，正是为了让 $M_{T\wedge n}$ 仍然是鞅。
+证明思路：把 $M_{T\wedge n}-M_0$ 拆成一局一局的增量之和，停时的定义保证每一局「是否下这一注」只取决于过去，于是每个增量条件期望为零，逐局取期望即得。这里 $T\wedge n$ 有界，一切期望都合法，不需要额外的可积性论证。
 
 把 $T$ 取成破产时间（第一次到达 $\{0,N\}$）。$|S_{T\wedge n}|\le N$ 一致有界，由控制收敛定理，$E[S_{T\wedge n}]=i$ 令 $n\to\infty$ 得 $E[S_T]=i$。而 $S_T$ 只取两个值，故
 \[
