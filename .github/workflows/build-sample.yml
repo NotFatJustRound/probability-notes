@@ -43,13 +43,15 @@ jobs:
           if-no-files-found: warn
 
       # xelatex 的 log 是压缩包里的文本，我这头取不到，就把错误摘录提交回分支当文件读。
-      # commit message 里带 [skip ci]，不然这次提交自己又能触发一轮。
+      # 摘录那次提交的信息里要带上 GitHub 认的跳过标记（写成 [skip"" ci] 拼接，
+      # 免得这个文件里出现字面量把后续 push 也一起跳过了）。
       - name: Publish error extract
         if: always()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
+          SKIP='[skip'" ci']"
           git config user.name "build-sample"
           git config user.email "build-sample@users.noreply.github.com"
           {
@@ -68,5 +70,5 @@ jobs:
             echo '```'
           } > chap05-build-report.md
           git add chap05-build-report.md
-          git commit -m "chap_05: 更新编译错误摘录 [skip ci]" || echo "无改动，跳过提交"
+          git commit -m "chap_05: 更新编译错误摘录 $SKIP" || echo "无改动，跳过提交"
           git push origin HEAD:chap05-sample
