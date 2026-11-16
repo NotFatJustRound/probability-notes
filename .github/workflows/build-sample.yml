@@ -43,8 +43,8 @@ jobs:
           if-no-files-found: warn
 
       # xelatex 的 log 是压缩包里的文本，我这头取不到，就把错误摘录提交回分支当文件读。
-      # 摘录那次提交的信息里要带上 GitHub 认的跳过标记（写成 [skip"" ci] 拼接，
-      # 免得这个文件里出现字面量把后续 push 也一起跳过了）。
+      # 注意 grep 在「一行错误都没匹配到」时返回 1，而本文件开了 pipefail，
+      # 所以那行管道要 || true，否则编译成功反而会把这个收尾步搞成红。
       - name: Publish error extract
         if: always()
         env:
@@ -61,9 +61,9 @@ jobs:
             echo
             echo '```'
             if [ -f chap_05_sample.log ]; then
-              grep -n -E '^(l\.[0-9]+ |! |LaTeX Error|Package .* Error|Fatal |! Undefined|! Missing)' chap_05_sample.log | head -n 150
+              { grep -n -E '^(l\.[0-9]+ |! |LaTeX Error|Package .* Error|Fatal |! Undefined|! Missing)' chap_05_sample.log || echo '（没有匹配到错误行）'; } | head -n 150
               echo '--- tail ---'
-              tail -n 25 chap_05_sample.log
+              tail -n 12 chap_05_sample.log
             else
               echo '没有 chap_05_sample.log（编译步没跑起来？）'
             fi
