@@ -1,0 +1,32 @@
+name: build-sample
+
+# 样章专用：只在 chap05-sample 分支上跑，验证 chap_05.tex 真能编出来。
+# 不发 release、不动 tag，主线 build-pdf.yml 一点没碰。
+
+on:
+  push:
+    branches: [chap05-sample]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Compile sample with XeLaTeX
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: chap_05_sample.tex
+          latexmk_use_xelatex: true
+          extra_packages: fandol pgf
+
+      - name: Upload sample PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: chap05-sample-pdf
+          path: chap_05_sample.pdf
