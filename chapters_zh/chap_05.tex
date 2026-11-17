@@ -1,0 +1,356 @@
+% 第五章。tikz 由 Probability_zh.tex 加载，probability.cls 未改动。
+% 草稿状态：图与文字待批，先随五章合并预览一起编。
+
+\section{条件期望：把随机变量当向量}
+
+上一章把随机变量当函数，把期望当重心。这一章往前再走一步：把「所有（平方可积的）随机变量」看成一个空间，在里面谈长度、谈夹角、谈垂直。乍看只是换了套说法，其实换的是问题——「已知 $\mathcal{G}$ 里那些信息时，$X$ 最该被猜成多少」，这句话在向量语言里只有一句回答：把 $X$ 投影到你能看见的那个子空间上。
+
+沿着这条线走完，四件原本各不相干的事会显出同一副面孔：全期望公式是投影保均值，全方差公式是勾股定理，最小二乘预测是最佳逼近，而赌场里那道流传最广的赌徒破产题，不过是路径图上一个带两个边界条件的调和函数。同一道定理本章给两种证法：解差分方程一次，用鞅一次。两种证法出自同一条投影性质，这才是它们值得都学一遍的理由。
+
+\subsection{平方可积随机变量的空间}
+
+\begin{definition}[$L^2$ 空间]
+设 $(\Omega,\mathcal{F},P)$ 为概率空间。记
+\[
+L^2(\Omega,\mathcal{F},P)=\Big\{X:\Omega\to\mathbb{R}\ \text{$\mathcal{F}$-可测}:\ E[X^2]<\infty\Big\},
+\]
+在其上定义内积与范数
+\[
+\langle X,Y\rangle=E[XY],\qquad \|X\|_2=\sqrt{E[X^2]} .
+\]
+\end{definition}
+
+内积确实有限，因为柯西—施瓦茨不等式给出
+\[
+\big|E[XY]\big|\le \sqrt{E[X^2]}\sqrt{E[Y^2]}=\|X\|_2\|Y\|_2 .
+\]
+严格地说，$\|X\|_2=0$ 当且仅当 $X=0$ 几乎必然，所以要把「几乎必然相等」的随机变量认作同一个元素（即对零测集上不同的那些商掉），$\|\cdot\|_2$ 才成为范数。这一步平时懒得提，但它解释了概率论里为什么到处是「几乎必然」：空间里的点本来就是一整类互为改版的函数。
+
+把线代里的词逐个翻译过来：
+
+\begin{center}
+\begin{tabular}{ll}
+\hline
+向量语言 & 概率语言\\
+\hline
+$\|X-Y\|_2^2$ & 均方误差 $E[(X-Y)^2]$\\
+$X\perp Y$（$\langle X,Y\rangle=0$） & $E[XY]=0$\\
+$X-\mu_X\perp Y-\mu_Y$ & $\mathrm{Cov}(X,Y)=0$\\
+常数子空间 $\{X\equiv c\}$ & 手里一点信息都没有\\
+子空间 $L^2(\Omega,\mathcal{G},P)$ & 「只依赖 $\mathcal{G}$ 里的信息」\\
+\hline
+\end{tabular}
+\end{center}
+
+最后一行是全章的钥匙：$\mathcal{G}\subseteq\mathcal{F}$ 是子 $\sigma$-代数时，$L^2(\mathcal{G})$ 是 $L^2(\mathcal{F})$ 的闭子空间，而「只依赖 $\mathcal{G}$」正是「我能观测到的信息不超过 $\mathcal{G}$」。信息就是子空间，预测就是投影。
+
+\begin{remark}[正交不等于没关系]
+上一章末尾那个 $Y=X^2$ 的例子，在几何里只是「两个向量垂直」：中心化后夹角为直角，仅此而已。垂直是一个关于内积的事实，独立是一个关于 $\sigma$-代数的事实，两者住在不同的层。把「不相关」读成「无关」，是把角度当成了全部形状。
+\end{remark}
+
+\subsection{条件期望就是正交投影}
+
+\begin{definition}[子 $\sigma$-代数上的条件期望]
+设 $\mathcal{G}\subseteq\mathcal{F}$，$X\in L^2(\mathcal{F})$。称 $\mathcal{G}$-可测的随机变量 $Z\in L^2(\mathcal{G})$ 为 $X$ 关于 $\mathcal{G}$ 的条件期望，记作 $E[X\mid\mathcal{G}]$，若它满足
+\[
+E\Big[\big(X-E[X\mid\mathcal{G}]\big)Z'\Big]=0
+\qquad\text{对一切 }Z'\in L^2(\mathcal{G}).
+\]
+\end{definition}
+
+这正是「残差与子空间中每个向量垂直」，也就是投影的刻画。于是存在唯一性不用另外证明：Hilbert 空间的投影定理直接给了它，还顺手给了第二条。
+
+\begin{theorem}[投影即最佳逼近]
+$E[X\mid\mathcal{G}]$ 存在且唯一（在几乎必然的意义下），并且
+\[
+E[X\mid\mathcal{G}]=\arg\min_{Y\in L^2(\mathcal{G})}E[(X-Y)^2];
+\]
+进一步有勾股分解
+\[
+E[X^2]=E\big[(E[X\mid\mathcal{G}])^2\big]+E\big[(X-E[X\mid\mathcal{G}])^2\big].
+\]
+\end{theorem}
+
+\begin{proof}
+取 $Y=E[X\mid\mathcal{G}]$ 与任意 $Y'\in L^2(\mathcal{G})$，把 $X-Y'$ 写成「残差 $+$ 子空间内的差」：
+\[
+E[(X-Y')^2]=E[(X-Y)^2]+2E[(X-Y)(Y-Y')]+E[(Y-Y')^2].
+\]
+中间项里 $Y-Y'\in L^2(\mathcal{G})$，按定义它与残差正交，故为零，剩下
+$E[(X-Y')^2]=E[(X-Y)^2]+E[(Y-Y')^2]\ge E[(X-Y)^2]$，
+等号当且仅当 $Y'=Y$（几乎必然）——这同时给出最小性与唯一性。勾股分解取 $Y'=0$ 即是。
+\end{proof}
+
+初等课本里的 $E[X\mid B]$ 是这个定义的特例，看清楚了就不必再背条件期望的公式。设 $\mathcal{G}$ 由互不相交的事件 $B_1,B_2,\dots$（$\bigcup_iB_i=\Omega$，$P(B_i)>0$）生成，那么 $\mathcal{G}$-可测就等价于「在每个 $B_i$ 上取常值」。这样的常值该取多少，投影已经替我们算好了：
+
+\[
+E[X\mid\mathcal{G}]\Big|_{B_i}=\frac{E[X\,\mathbf{1}_{B_i}]}{P(B_i)}=E[X\mid B_i].
+\]
+
+所以初等意义上的「条件期望」就是一个阶梯函数：把样本空间按已知信息切成块，在每一块里取平均。信息越细，块越小，阶梯越密；$\mathcal{G}=\{\varnothing,\Omega\}$（什么都不知道）时只剩一级阶梯，条件期望退化为普通期望 $E[X]$。
+
+\begin{example}[骰子的奇偶]\ \\
+设 $X$ 为均匀骰子的点数，$\mathcal{G}=\sigma(\text{奇偶})$，即只告诉你奇偶，不告诉你点数。$L^2(\mathcal{G})$ 里的元素只在「奇」「偶」两块上各取一个常值，而两块上的平均分别是
+\[
+\frac{1+3+5}{3}=3,\qquad \frac{2+4+6}{3}=4,
+\]
+故 $E[X\mid\mathcal{G}]=3\cdot\mathbf{1}_{\text{奇}}+4\cdot\mathbf{1}_{\text{偶}}$。
+
+验一下正交性——这才是定义要求的性质，不是「平均数算对了」：
+\[
+E\big[(X-E[X\mid\mathcal{G}])\mathbf{1}_{\text{奇}}\big]=(1-3)+(3-3)+(5-3)=0,
+\]
+偶块上 $(2-4)+(4-4)+(6-4)=0$ 同理。
+
+再用勾股分解对账。$\mathrm{Var}(X)=35/12$（上一章算过）。块内：奇数 $\{1,3,5\}$ 的方差是 $\frac{4+0+4}{3}=\frac83$，偶数一样，故 $E[\mathrm{Var}(X\mid\mathcal{G})]=\frac83$。块间：$E[X\mid\mathcal{G}]$ 以各 $\frac12$ 取 $3,4$，方差 $\frac14$。相加
+\[
+\frac83+\frac14=\frac{32}{12}+\frac{3}{12}=\frac{35}{12}=\mathrm{Var}(X).\ \checkmark
+\]
+\end{example}
+
+上面那两行不是巧合，是下面这条定理的样子。
+
+\begin{proposition}[塔性质]
+$E\big[E[X\mid\mathcal{G}]\big]=E[X]$。
+\end{proposition}
+
+\begin{proof}
+定义里取 $Z'\equiv 1$（常数总在任何子空间里），得 $E[X-E[X\mid\mathcal{G}]]=0$。
+\end{proof}
+
+一句话：投影不改变均值。条件期望虽然是个随机变量，它的期望永远是原来那个数——所以「先条件再平均」等于「直接平均」。
+
+\begin{theorem}[全方差公式]
+\[
+\mathrm{Var}(X)=E\big[\mathrm{Var}(X\mid\mathcal{G})\big]+\mathrm{Var}\big(E[X\mid\mathcal{G}]\big).
+\]
+\end{theorem}
+
+\begin{proof}
+记 $\mu=E[X]$，$Z=E[X\mid\mathcal{G}]$。由塔性质 $E[Z]=\mu$，故
+\[
+\mathrm{Var}(X)=E[(X-\mu)^2]=E\big[(X-Z)^2\big]+2E[(X-Z)(Z-\mu)]+E[(Z-\mu)^2].
+\]
+$Z-\mu$ 是 $\mathcal{G}$-可测的，交叉项按正交性为零。又 $\mu$ 是常数，$E[X\mid\mathcal{G}]-\mu=E[X-\mu\mid\mathcal{G}]$，再用一次正交性：
+\[
+E\big[(X-\mu)^2\mid\mathcal{G}\big]
+=E\big[(X-Z)^2\mid\mathcal{G}\big]+E\big[(Z-\mu)^2\mid\mathcal{G}\big],
+\]
+对第一项再取期望正是 $E[\mathrm{Var}(X\mid\mathcal{G})]$，第二项取期望是 $\mathrm{Var}(Z)$。
+\end{proof}
+
+读法：总散布 $=$ 块内散布的平均 $+$ 块间散布。信息把空间切成块，方差被分到「块里还剩多少」和「块与块差多少」两处，一分不多一分不少——这就是勾股定理，只不过斜边是 $X-\mu$，两条直角边分别是「看不懂的残余」和「信息带来的差别」。
+
+\subsection{最优预测与芯片的教训}
+
+定理里那个 $\arg\min$ 是本章最实用的部分：给定能观测的信息 $\mathcal{G}$，均方误差最小的预测就是条件期望，且最小均方误差恰好等于 $E[\mathrm{Var}(X\mid\mathcal{G})]$——块内散布就是代价的下界，谁来做预测都绕不过去。
+
+\begin{example}[只能看见粗粒度时]
+设 $X$ 是某芯片的失效时间，你测不到它本身，只测得到「它属于哪一批次」。此时任何预测都必须是「批次的函数」，也就是 $L^2(\mathcal{G})$ 里的元素，于是最优预测只能是同批次的平均失效时间。想改进预测，唯一的路是把 $\mathcal{G}$ 加大（多测一个量）；观测不变时换算法、调权重，都不会让均方误差再降下这一点。
+\end{example}
+
+顺着芯片说一件容易被规格书糊过去的事。
+
+\begin{example}[边际相同绝不等于独立]\ \\
+两枚芯片，各自合格的概率都是 $p$——规格书上写的就这些：两个 $\mathrm{Bernoulli}(p)$ 的边缘。记 $q=1-p$，$X,Y$ 为合格指示变量，则 $\mathrm{Var}(X)=\mathrm{Var}(Y)=pq$。边缘钉死后，联合分布仍可任选，和的方差跟着变：
+\begin{center}
+\begin{tabular}{lll}
+\hline
+耦合方式 & 工程含义 & $\mathrm{Var}(X+Y)$\\
+\hline
+$Y=X$ & 同一片晶圆同一区域，缺陷一起出现 & $4pq$\\
+$X,Y$ 独立 & 来自互不相关的两炉料 & $2pq$\\
+$Y=1-X$（仅 $p=\frac12$ 可行） & 刻意反相的冗余设计 & $0$\\
+\hline
+\end{tabular}
+\end{center}
+边缘一模一样，合格总数的散布可以从 $0$ 跨到 $4pq$。
+\end{example}
+
+\begin{remark}
+规格书描述的是边缘，风险算的是联合。「两枚芯片规格完全相同」这句话里不含任何关于独立性的信息；独立是一个额外的、通常并不成立的假设——同批次的两枚芯片往往正相关，而「冗余设计降低了风险」这件事只有在负相关时才真的成立。这是「$\mathrm{Var}(X+Y)=\mathrm{Var}(X)+\mathrm{Var}(Y)$」滥用的一处分岔口，也是上一章耦合表在 $0/1$ 上的重演。
+\end{remark}
+
+\subsection{路径图上的调和函数：赌徒破产}
+
+现在开始还债：一道纯算率的题，用几何重做一遍。
+
+\emph{赌徒破产。} 赌徒有 $i$ 元，$1\le i\le N-1$。每局以概率 $p$ 赢 $1$ 元、以概率 $q=1-p$ 输 $1$ 元，各局独立。钱到 $0$（输光）或到 $N$（达标）即停。问：从 $i$ 元出发，先到达 $N$ 的概率 $h_i$ 是多少？
+
+把状态画出来：一条路径图
+\[
+0\;—\;1\;—\;2\;—\;\cdots\;—\;(N-1)\;—\;N,
+\]
+两个端点是吸收态。$h$ 是定义在这 $N+1$ 个顶点上的函数，且 $h_0=0$、$h_N=1$。
+
+\begin{center}
+\begin{tikzpicture}[scale=1.0]
+  \draw[black!45,line width=1.6pt] (0,0) -- (6.1,0);
+  \filldraw[black!70,fill=yellow!35] (0,0) circle (3.6pt);
+  \filldraw[black!70,fill=yellow!35] (6.1,0) circle (3.6pt);
+  \filldraw[black!55,fill=white] (1.3,0) circle (2.9pt);
+  \filldraw[black!55,fill=white] (2.6,0) circle (2.9pt);
+  \filldraw[black!55,fill=white] (4.8,0) circle (2.9pt);
+  \node[font=\small] at (0,0.5) {$h_0=0$};
+  \node[font=\scriptsize,text=black!60] at (0,-0.5) {输光};
+  \node[font=\small] at (1.3,0.5) {$h_1$};
+  \node[font=\small] at (2.6,0.5) {$h_2$};
+  \node[font=\large] at (3.7,0) {$\cdots$};
+  \node[font=\small] at (4.8,0.5) {$h_{N-1}$};
+  \node[font=\small] at (6.1,0.5) {$h_N=1$};
+  \node[font=\scriptsize,text=black!60] at (6.1,-0.5) {达标};
+  \draw[->,black!60] (1.36,0.17) -- node[above,font=\scriptsize,text=black!70]{$p$} (2.54,0.17);
+  \draw[<-,black!60] (1.36,-0.17) -- node[below,font=\scriptsize,text=black!70]{$q$} (2.54,-0.17);
+\end{tikzpicture}
+\end{center}
+
+\begin{definition}[生成元与调和函数]
+对定义在顶点上的函数 $h$，定义
+\[
+(\mathcal{L}h)(i)=p\,h(i+1)+q\,h(i-1)-h(i),\qquad 1\le i\le N-1 .
+\]
+称 $h$ 在内部\textbf{调和}，若 $(\mathcal{L}h)(i)=0$ 对每个内部顶点成立，即每个内部顶点的值等于其邻居的加权平均。$p=q=\frac12$ 时
+\[
+(\mathcal{L}h)(i)=\tfrac12\big(h(i+1)-2h(i)+h(i-1)\big),
+\]
+正是离散拉普拉斯算子的一半。
+\end{definition}
+
+「第一步先条件化」说的是：$h_i=p\,h_{i+1}+q\,h_{i-1}$。所以本章第一节的语言可以直接换过来——\textbf{赢的概率 $h$ 是调和的}。边界上 $h_0=0$、$h_N=1$ 由定义给定。于是一道概率题变成了一个边值问题。
+
+\begin{theorem}[赌徒破产]
+$h$ 是边值问题
+\[
+(\mathcal{L}h)(i)=0\ (1\le i\le N-1),\qquad h_0=0,\quad h_N=1
+\]
+的唯一解。记 $r=q/p$，则
+\[
+h_i=\begin{cases}
+\dfrac{1-r^{\,i}}{1-r^{\,N}}, & p\ne q,\\[10pt]
+\dfrac{i}{N}, & p=q=\dfrac12 .
+\end{cases}
+\]
+\end{theorem}
+
+\begin{proof}
+先解方程。$(\mathcal{L}h)(i)=0$ 即 $p\,h_{i+1}-h_i+q\,h_{i-1}=0$，是二阶线性差分方程。试 $h_i=\rho^{\,i}$，代入并除以 $\rho^{\,i-1}$：
+\[
+p\rho^{2}-\rho+q=0
+\quad\Longrightarrow\quad
+\rho_1=1,\ \ \rho_2=\frac{q}{p}=r .
+\]
+（判别式 $1-4pq=(p-q)^2\ge0$，两根总在实数上，$\rho_1\rho_2=q/p$。）
+
+公平局 $p=q$ 时两根重合于 $1$，此时方程等价于 $h_{i+1}-2h_i+h_{i-1}=0$：二阶差分为零，故一阶差分为常数，$h$ 是 $i$ 的线性函数。两个边界条件把这条直线钉死——斜率 $\frac1N$、截距 $0$，得 $h_i=\frac iN$。
+
+$p\ne q$ 时通解为 $h_i=A+B r^{\,i}$。代入 $h_0=0$ 得 $A=-B$；代入 $h_N=1$ 得 $B(r^{\,N}-1)=1$，于是
+\[
+h_i=\frac{r^{\,i}-1}{r^{\,N}-1}=\frac{1-r^{\,i}}{1-r^{\,N}} .
+\]
+
+再证唯一性，这一步比解方程要紧。设 $h$ 调和并在某个内部顶点 $i$ 取到最大值 $M$。由 $M=h_i=p\,h_{i+1}+q\,h_{i-1}$ 且右端是不超过 $M$ 的两个数的加权平均，$p,q>0$，迫使 $h_{i+1}=h_{i-1}=M$。沿图逐步外推，全部顶点取值 $M$，与 $h_0=0\ne1=h_N$ 矛盾。故最大值必在边界取到，同理最小值也在边界取到。若 $h,\tilde h$ 是同一边值问题的两个解，$h-\tilde h$ 调和且边界为零，其最大与最小都只能是 $0$，故 $h\equiv\tilde h$。
+\end{proof}
+
+极值原理这段值得停一下：它没有用到差分方程的解长什么样，只用了「内部值 $=$ 邻居平均」。因此这套论证在任意状态图上都成立——网格上、图上任意的马尔可夫链上、乃至连续情形调和函数的强极值原理上，都是同一段话的不同皮肤。解方程是这张图的特殊技巧，极值原理才是随身的工具。
+
+\begin{center}
+\begin{tikzpicture}[scale=1.25]
+  \draw[->,black!65] (0,0) -- (6.3,0);
+  \draw[->,black!65] (0,0) -- (0,1.32);
+  \node[font=\scriptsize,text=black!70] at (6.35,-0.14) {$i$};
+  \node[font=\scriptsize,text=black!70] at (-0.18,1.3) {$h_i$};
+  \draw[black!45,line width=0.8pt] (5,0) -- (5,1);
+  \node[font=\scriptsize,text=black!70] at (5,-0.18) {$N$};
+  \node[font=\scriptsize,text=black!70] at (2.5,-0.18) {$N/2$};
+  \draw[dashed,black!45] (0,1) -- (5.6,1);
+  \node[font=\scriptsize,text=black!70] at (5.75,1.05) {$1$};
+  % 公平局：直线 i/N
+  \draw[black!70,line width=1.1pt] (0,0) -- (5,1);
+  \node[font=\scriptsize,text=black!70] at (3.3,0.86) {$p=\tfrac12$：$\dfrac{i}{N}$};
+  % 有偏局 p=0.45：h_i=(r^i-1)/(r^N-1)，r=11/9，N=5，r^N-1=1.72735
+  \draw[domain=0:5,smooth,variable=\t,samples=120,blue!60!black,line width=1.1pt]
+    plot ({\t},{(pow(1.22222,\t)-1)/1.72735});
+  \foreach \t in {0,1,2,3,4,5}
+    \fill[blue!60!black] (\t,{(pow(1.22222,\t)-1)/1.72735}) circle (1.1pt);
+  \node[font=\scriptsize,text=blue!55!black,align=left] at (1.05,0.52)
+    {$p=0.45$：$\frac{1-r^{i}}{1-r^{N}}$，$r=\frac{q}{p}$};
+\end{tikzpicture}
+\end{center}
+
+图上两条线的落差就是庄家的抽水。有偏那条压在直线下方，而且是\emph{凸}的：钱越少，离目标越渺茫；越接近目标，曲线越陡——最后一块钱比前四块钱加起来还值钱。
+
+\begin{corollary}[赌场没有尽头]
+固定本金 $i$，让目标 $N\to\infty$：
+\[
+p\le q\ \text{时}\ h_i\longrightarrow 0;\qquad
+p>q\ \text{时}\ h_i\longrightarrow 1-\Big(\frac{q}{p}\Big)^{i}>0 .
+\]
+\end{corollary}
+
+公平局里 $h_i=\frac iN$ 随 $N$ 变平，目标推到无穷远，胜算就摊成零——「一直玩下去」在公平赌局里也救不了你，更别说 $p<q$。只有 $p>q$ 那条极限 $1-(q/p)^i$ 是正的，而且它跟 $N$ 无关：优势在手，无限赌场里也有一条明确的活命概率。三行的差别，全在 $r$ 大于 $1$ 还是小于 $1$。
+
+\subsection{同一个定理的第二次证明：鞅}
+
+边值问题的证法靠解差分方程，只在这条链上管用了。换一件工具，同一条结论会自己走出来。
+
+\begin{definition}[鞅]
+适应于 $\sigma$-代数流 $\mathcal{F}_0\subseteq\mathcal{F}_1\subseteq\cdots$ 的随机变量列 $\{M_n\}$ 称为鞅，若 $E[|M_n|]<\infty$ 且
+\[
+E\big[M_{n+1}\mid\mathcal{F}_n\big]=M_n\qquad\text{对一切 }n .
+\]
+\end{definition}
+
+用投影的语言念这条式子：给定到目前为止的全部信息，明天的最佳预测就等于今天的值。鞅就是「没有任何可预测漂移」的过程——信息在增长，投影却不偏。公平赌局的部分和 $S_n$ 正是鞅：$\mathcal{F}_n$ 是前 $n$ 局的观测，而
+\[
+E[S_{n+1}\mid\mathcal{F}_n]=S_n+E[\text{第 }n+1\text{ 局}]=S_n+0=S_n .
+\]
+
+\begin{proposition}[有界停时]
+若 $\{M_n\}$ 是鞅，$T$ 是停时（「何时收手」只由已发生的事决定），则对每个 $n$，$E[M_{T\wedge n}]=E[M_0]$。
+\end{proposition}
+
+证明思路：把 $M_{T\wedge n}-M_0$ 拆成一局一局的增量之和，停时的定义保证每一局「是否下这一注」只取决于过去，于是每个增量条件期望为零，逐局取期望即得。这里 $T\wedge n$ 有界，一切期望都合法，不需要额外的可积性论证。
+
+把 $T$ 取成破产时间（第一次到达 $\{0,N\}$）。$|S_{T\wedge n}|\le N$ 一致有界，由控制收敛定理，$E[S_{T\wedge n}]=i$ 令 $n\to\infty$ 得 $E[S_T]=i$。而 $S_T$ 只取两个值，故
+\[
+i=E[S_T]=0\cdot P(\text{先到 }0)+N\cdot P(\text{先到 }N)=N\,h_i
+\quad\Longrightarrow\quad
+h_i=\frac iN .
+\]
+三行，没解任何方程。
+
+有偏局同样一句话，只是要换一只鞅。令 $r=q/p$，则 $\{r^{\,S_n}\}$ 是鞅，因为
+\[
+E\big[r^{\,S_{n+1}}\mid\mathcal{F}_n\big]
+=r^{\,S_n}\big(p\cdot r+q\cdot r^{-1}\big)
+=r^{\,S_n}(q+p)=r^{\,S_n}.
+\]
+$1\le S_n\le N$ 期间 $r^{S_{T\wedge n}}$ 有界，同样取极限：
+\[
+r^{\,i}=E\big[r^{\,S_T}\big]=h_i\,r^{\,N}+(1-h_i)\cdot 1
+\quad\Longrightarrow\quad
+h_i=\frac{r^{\,i}-1}{r^{\,N}-1}.
+\]
+注意 $p=q$ 时 $r=1$，上式退化成 $\frac00$，洛必达一次就回到 $\frac iN$——两条式子其实是一条。
+
+\begin{remark}
+两次证明是同一条性质的两次使用。「内部值等于邻居平均」往短处用，是一步递推，得到差分方程；往长处用，是「任意停时之后的期望不变」，得到鞅。前者要你会解方程，后者要你会挑鞅（$S_n$ 与 $r^{S_n}$，一个对应加法漂移、一个对应乘法漂移）。鞅证法还留了个便宜的彩头：$T<\infty$ 几乎必然、以及一般状态空间上的推广，都不用重来一遍。
+\end{remark}
+
+\begin{remark}[顺手记下三条边界]
+一、停时必须检查。$E[M_T]=E[M_0]$ 不是免费的，本章两次都靠「$S$ 被压在 $[0,N]$ 里」提供了控制变量；鞅 $S_n$ 不加停时地跑向无穷，就没有这个便宜可占。二、有偏局的鞅是 $S_n-n(p-q)$（减法漂移）或 $r^{S_n}$（乘法漂移），直接拿 $S_n$ 当鞅是最常见的手滑。三、$\mathcal{L}h=0$ 只在\emph{内部}成立，边界上是条件而不是结论——把 $i=0$ 或 $i=N$ 代进递推式，会得到一句废话。
+\end{remark}
+
+\subsection{本章容易踩的地方}
+
+第一，把 $E[X\mid\mathcal{G}]$ 当成一个数。它是 $\mathcal{G}$-可测的随机变量，只有 $\mathcal{G}$ 是平凡 $\sigma$-代数时才退化为常数。写完全方差公式却把中间项当常数，是这一章最常见的错。
+
+第二，把投影当成「加了点信息的期望」。投影不保持分布，也不保持独立性；$E[X\mid\mathcal{G}]$ 的分布可以和 $X$ 相差很远（骰子例子里它只取两个值）。
+
+第三，全方差公式两个方向记反。分法是 $\text{总}=\text{块内平均}+\text{块间}$，其中「块内」是 $E[\mathrm{Var}(X\mid\mathcal{G})]$，「块间」是 $\mathrm{Var}(E[X\mid\mathcal{G}])$。验算它最快的办法就是本章骰子那一题：$\frac83+\frac14=\frac{35}{12}$。
+
+第四，由边缘分布推独立。芯片那节是反例：两个 $\mathrm{Bernoulli}(p)$ 边缘固定，和的方差可以是 $0$、$2pq$、$4pq$。凡看见「两者独立，所以方差可加」，先问一句它们在不在同一批。
+
+第五，赌徒破产里把 $\frac iN$ 用到 $p\ne q$ 上。有偏局的解是 $\frac{1-r^i}{1-r^N}$，而且 $N\to\infty$ 的极限行为由 $r$ 与 $1$ 的大小决定：$p\le q$ 归零，$p>q$ 才留下正的概率。
+
+第六，条件期望的递推式在吸收态上不成立。$h_0=0$、$h_N=1$ 是给定的条件，不是解出来的结果；极值原理那段全靠这个区分才站得住。
