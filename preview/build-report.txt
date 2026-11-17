@@ -1,8 +1,8 @@
-commit: de27cf5859200e796593ccf2e70fe4e2f1f28927
+commit: 1b3f5fc996ffd2572c78abda1dd0fbf5eb5d885c
 compile outcome: success
 
 ---- pdf ----
--rw-r--r-- 1 root root 717863 Nov 17 05:02 Probability_zh.pdf
+-rw-r--r-- 1 root root 725303 Nov 17 05:20 Probability_zh.pdf
 
 ---- LaTeX 报错行 ----
 == Probability_zh.log ==
