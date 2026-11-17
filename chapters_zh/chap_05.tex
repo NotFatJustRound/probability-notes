@@ -1,9 +1,12 @@
 % 第五章。tikz 由 Probability_zh.tex 加载，probability.cls 未改动。
-% 草稿状态：图与文字待批，先随五章合并预览一起编。
+% 按评审报告修订：柯西—施瓦茨给标准形式并加绝对值；标明 L^2 框架的适用边界；
+% 赌徒破产补参数范围与停时使用的条件。
 
 \section{条件期望：把随机变量当向量}
 
 上一章把随机变量当函数，把期望当重心。这一章往前再走一步：把「所有（平方可积的）随机变量」看成一个空间，在里面谈长度、谈夹角、谈垂直。乍看只是换了套说法，其实换的是问题——「已知 $\mathcal{G}$ 里那些信息时，$X$ 最该被猜成多少」，这句话在向量语言里只有一句回答：把 $X$ 投影到你能看见的那个子空间上。
+
+先把话说在前面：本章的条件期望\emph{只在平方可积的范围内}定义，这是为了用 Hilbert 空间的几何而主动付的代价，不是条件期望本来的边界。一般情形见本节末尾那条注。
 
 沿着这条线走完，四件原本各不相干的事会显出同一副面孔：全期望公式是投影保均值，全方差公式是勾股定理，最小二乘预测是最佳逼近，而赌场里那道流传最广的赌徒破产题，不过是路径图上一个带两个边界条件的调和函数。同一道定理本章给两种证法：解差分方程一次，用鞅一次。两种证法出自同一条投影性质，这才是它们值得都学一遍的理由。
 
@@ -20,10 +23,12 @@ L^2(\Omega,\mathcal{F},P)=\Big\{X:\Omega\to\mathbb{R}\ \text{$\mathcal{F}$-可�
 \]
 \end{definition}
 
-内积确实有限，因为柯西—施瓦茨不等式给出
+内积确实有限，这靠的是柯西—施瓦茨不等式的标准形式：
 \[
-\big|E[XY]\big|\le \sqrt{E[X^2]}\sqrt{E[Y^2]}=\|X\|_2\|Y\|_2 .
+\boxed{\ \big|E[XY]\big|\ \le\ \sqrt{E[X^2]\,E[Y^2]}=\|X\|_2\,\|Y\|_2\ }
 \]
+左边是\emph{绝对值}，右边两根号合在一个根号下。两个细节值得点出来。其一，绝对值不能省：$E[XY]$ 可以是负数，写成 $E[XY]\le\sqrt{E[X^2]E[Y^2]}$ 虽然也算一句真话（它比真定理弱得多的单向版本），但内积要被范数控制住，靠的是双侧的界，把绝对值丢掉就等于把定理的一半扔了。其二，等号当且仅当 $X,Y$ 线性相关（其中一个几乎必然为另一个的常数倍）时成立，这一半在后面估误差时同样常用。
+
 严格地说，$\|X\|_2=0$ 当且仅当 $X=0$ 几乎必然，所以要把「几乎必然相等」的随机变量认作同一个元素（即对零测集上不同的那些商掉），$\|\cdot\|_2$ 才成为范数。这一步平时懒得提，但它解释了概率论里为什么到处是「几乎必然」：空间里的点本来就是一整类互为改版的函数。
 
 把线代里的词逐个翻译过来：
@@ -81,6 +86,14 @@ $E[(X-Y')^2]=E[(X-Y)^2]+E[(Y-Y')^2]\ge E[(X-Y)^2]$，
 等号当且仅当 $Y'=Y$（几乎必然）——这同时给出最小性与唯一性。勾股分解取 $Y'=0$ 即是。
 \end{proof}
 
+\begin{remark}[这套定义只管得到 $L^2$，别以为条件期望只有这么大]
+上面这个定义处处要求 $E[X^2]<\infty$：内积要有限、残差要属于 $L^2$、投影定理要求闭子空间。这是几何语言的入场券，不是条件期望本身的要求。
+
+真正的条件期望只需要可积性：$E[|X|]<\infty$ 时，$\nu(A)=E[X\mathbf{1}_A]$（$A\in\mathcal{G}$）是 $\mathcal{G}$ 上关于 $P$ 绝对连续的可加函数，Radon--Nikodym 导数 $\dfrac{d\nu}{dP\mid_{\mathcal{G}}}$ 就是 $E[X\mid\mathcal{G}]$，仍只在几乎必然的意义下唯一。塔性质、拉出已知因子、条件化的单调收敛这些基本性质，都在 $L^1$ 层面成立，不需要二阶矩。
+
+所以本章的说法应当这样理解：$L^2$ 是刻意选的一个小房间，在里面能谈长度和角度，代价是把只有一阶矩的随机变量挡在门外。凡是本章某条结论其实只需要 $E[|X|]<\infty$ 的（塔性质就是典型），它到 $L^1$ 里照样成立；凡是用了 $\|\cdot\|_2$ 或均方误差的（最佳逼近、勾股分解、全方差公式），出不了 $L^2$。用之前先看一眼自己有没有二阶矩。
+\end{remark}
+
 初等课本里的 $E[X\mid B]$ 是这个定义的特例，看清楚了就不必再背条件期望的公式。设 $\mathcal{G}$ 由互不相交的事件 $B_1,B_2,\dots$（$\bigcup_iB_i=\Omega$，$P(B_i)>0$）生成，那么 $\mathcal{G}$-可测就等价于「在每个 $B_i$ 上取常值」。这样的常值该取多少，投影已经替我们算好了：
 
 \[
@@ -118,7 +131,7 @@ $E\big[E[X\mid\mathcal{G}]\big]=E[X]$。
 定义里取 $Z'\equiv 1$（常数总在任何子空间里），得 $E[X-E[X\mid\mathcal{G}]]=0$。
 \end{proof}
 
-一句话：投影不改变均值。条件期望虽然是个随机变量，它的期望永远是原来那个数——所以「先条件再平均」等于「直接平均」。
+一句话：投影不改变均值。条件期望虽然是个随机变量，它的期望永远是原来那个数——所以「先条件再平均」等于「直接平均」。这条只要 $E[|X|]<\infty$ 就成立，是前面那条注里说的「能出 $L^2$」的结论。
 
 \begin{theorem}[全方差公式]
 \[
@@ -139,7 +152,7 @@ E\big[(X-\mu)^2\mid\mathcal{G}\big]
 对第一项再取期望正是 $E[\mathrm{Var}(X\mid\mathcal{G})]$，第二项取期望是 $\mathrm{Var}(Z)$。
 \end{proof}
 
-读法：总散布 $=$ 块内散布的平均 $+$ 块间散布。信息把空间切成块，方差被分到「块里还剩多少」和「块与块差多少」两处，一分不多一分不少——这就是勾股定理，只不过斜边是 $X-\mu$，两条直角边分别是「看不懂的残余」和「信息带来的差别」。
+读法：总散布 $=$ 块内散布的平均 $+$ 块间散布。信息把空间切成块，方差被分到「块里还剩多少」和「块与块差多少」两处，一分不多一分不少——这就是勾股定理，只不过斜边是 $X-\mu$，两条直角边分别是「看不懂的残余」和「信息带来的差别」。用之前记得确认 $\mathrm{Var}(X)<\infty$，否则式子里的每一项都可能先是 $\infty$。
 
 \subsection{最优预测与芯片的教训}
 
@@ -177,6 +190,12 @@ $Y=1-X$（仅 $p=\frac12$ 可行） & 刻意反相的冗余设计 & $0$\\
 
 \emph{赌徒破产。} 赌徒有 $i$ 元，$1\le i\le N-1$。每局以概率 $p$ 赢 $1$ 元、以概率 $q=1-p$ 输 $1$ 元，各局独立。钱到 $0$（输光）或到 $N$（达标）即停。问：从 $i$ 元出发，先到达 $N$ 的概率 $h_i$ 是多少？
 
+\begin{remark}[这个模型到底假设了什么]
+把参数范围写死，免得后面的式子被用到它管不着的地方：$N\ge2$ 是整数本金上限，$i\in\{1,\dots,N-1\}$ 是起点；$p\in[0,1]$，$q=1-p$，各局相互独立且每局只走 $\pm1$ 一步。端点 $p=0$ 与 $p=1$ 是平凡的（必定一路向一个方向走，$h_i$ 相应恒为 $0$ 或恒为 $1$），下面通式里 $r=q/p$ 在这两个点上要么无穷要么为零，得单独看；$0<p<1$ 才是正文讨论的范围。
+
+另外「先到 $N$ 的概率」这件事本身依赖于「过程一定会停」。$0<p<1$ 时 $T<\infty$ 几乎必然（下一节鞅证法顺带把它带出来），所以 $h_i$ 加上「先输光」的概率等于 $1$，没有第三种逃逸的出路；如果换成长步长或者无上界的链，这个假设就不一定成立了。
+\end{remark}
+
 把状态画出来：一条路径图
 \[
 0\;—\;1\;—\;2\;—\;\cdots\;—\;(N-1)\;—\;N,
@@ -185,22 +204,22 @@ $Y=1-X$（仅 $p=\frac12$ 可行） & 刻意反相的冗余设计 & $0$\\
 
 \begin{center}
 \begin{tikzpicture}[scale=1.0]
-  \draw[black!45,line width=1.6pt] (0,0) -- (6.1,0);
-  \filldraw[black!70,fill=yellow!35] (0,0) circle (3.6pt);
-  \filldraw[black!70,fill=yellow!35] (6.1,0) circle (3.6pt);
-  \filldraw[black!55,fill=white] (1.3,0) circle (2.9pt);
-  \filldraw[black!55,fill=white] (2.6,0) circle (2.9pt);
-  \filldraw[black!55,fill=white] (4.8,0) circle (2.9pt);
-  \node[font=\small] at (0,0.5) {$h_0=0$};
-  \node[font=\scriptsize,text=black!60] at (0,-0.5) {输光};
-  \node[font=\small] at (1.3,0.5) {$h_1$};
-  \node[font=\small] at (2.6,0.5) {$h_2$};
-  \node[font=\large] at (3.7,0) {$\cdots$};
-  \node[font=\small] at (4.8,0.5) {$h_{N-1}$};
-  \node[font=\small] at (6.1,0.5) {$h_N=1$};
-  \node[font=\scriptsize,text=black!60] at (6.1,-0.5) {达标};
-  \draw[->,black!60] (1.36,0.17) -- node[above,font=\scriptsize,text=black!70]{$p$} (2.54,0.17);
-  \draw[<-,black!60] (1.36,-0.17) -- node[below,font=\scriptsize,text=black!70]{$q$} (2.54,-0.17);
+ \draw[black!45,line width=1.6pt] (0,0) -- (6.1,0);
+ \filldraw[black!70,fill=yellow!35] (0,0) circle (3.6pt);
+ \filldraw[black!70,fill=yellow!35] (6.1,0) circle (3.6pt);
+ \filldraw[black!55,fill=white] (1.3,0) circle (2.9pt);
+ \filldraw[black!55,fill=white] (2.6,0) circle (2.9pt);
+ \filldraw[black!55,fill=white] (4.8,0) circle (2.9pt);
+ \node[font=\small] at (0,0.5) {$h_0=0$};
+ \node[font=\scriptsize,text=black!60] at (0,-0.5) {输光};
+ \node[font=\small] at (1.3,0.5) {$h_1$};
+ \node[font=\small] at (2.6,0.5) {$h_2$};
+ \node[font=\large] at (3.7,0) {$\cdots$};
+ \node[font=\small] at (4.8,0.5) {$h_{N-1}$};
+ \node[font=\small] at (6.1,0.5) {$h_N=1$};
+ \node[font=\scriptsize,text=black!60] at (6.1,-0.5) {达标};
+ \draw[->,black!60] (1.36,0.17) -- node[above,font=\scriptsize,text=black!70]{$p$} (2.54,0.17);
+ \draw[<-,black!60] (1.36,-0.17) -- node[below,font=\scriptsize,text=black!70]{$q$} (2.54,-0.17);
 \end{tikzpicture}
 \end{center}
 
@@ -219,7 +238,7 @@ $Y=1-X$（仅 $p=\frac12$ 可行） & 刻意反相的冗余设计 & $0$\\
 「第一步先条件化」说的是：$h_i=p\,h_{i+1}+q\,h_{i-1}$。所以本章第一节的语言可以直接换过来——\textbf{赢的概率 $h$ 是调和的}。边界上 $h_0=0$、$h_N=1$ 由定义给定。于是一道概率题变成了一个边值问题。
 
 \begin{theorem}[赌徒破产]
-$h$ 是边值问题
+$0<p<1$ 时，$h$ 是边值问题
 \[
 (\mathcal{L}h)(i)=0\ (1\le i\le N-1),\qquad h_0=0,\quad h_N=1
 \]
@@ -255,29 +274,29 @@ h_i=\frac{r^{\,i}-1}{r^{\,N}-1}=\frac{1-r^{\,i}}{1-r^{\,N}} .
 
 \begin{center}
 \begin{tikzpicture}[scale=1.25]
-  \draw[->,black!65] (0,0) -- (6.3,0);
-  \draw[->,black!65] (0,0) -- (0,1.32);
-  \node[font=\scriptsize,text=black!70] at (6.35,-0.14) {$i$};
-  \node[font=\scriptsize,text=black!70] at (-0.18,1.3) {$h_i$};
-  \draw[black!45,line width=0.8pt] (5,0) -- (5,1);
-  \node[font=\scriptsize,text=black!70] at (5,-0.18) {$N$};
-  \node[font=\scriptsize,text=black!70] at (2.5,-0.18) {$N/2$};
-  \draw[dashed,black!45] (0,1) -- (5.6,1);
-  \node[font=\scriptsize,text=black!70] at (5.75,1.05) {$1$};
-  % 公平局：直线 i/N
-  \draw[black!70,line width=1.1pt] (0,0) -- (5,1);
-  \node[font=\scriptsize,text=black!70] at (3.3,0.86) {$p=\tfrac12$：$\dfrac{i}{N}$};
-  % 有偏局 p=0.45：h_i=(r^i-1)/(r^N-1)，r=11/9，N=5，r^N-1=1.72735
-  \draw[domain=0:5,smooth,variable=\t,samples=120,blue!60!black,line width=1.1pt]
-    plot ({\t},{(pow(1.22222,\t)-1)/1.72735});
-  \foreach \t in {0,1,2,3,4,5}
-    \fill[blue!60!black] (\t,{(pow(1.22222,\t)-1)/1.72735}) circle (1.1pt);
-  \node[font=\scriptsize,text=blue!55!black,align=left] at (1.05,0.52)
-    {$p=0.45$：$\frac{1-r^{i}}{1-r^{N}}$，$r=\frac{q}{p}$};
+ \draw[->,black!65] (0,0) -- (6.3,0);
+ \draw[->,black!65] (0,0) -- (0,1.32);
+ \node[font=\scriptsize,text=black!70] at (6.35,-0.14) {$i$};
+ \node[font=\scriptsize,text=black!70] at (-0.18,1.3) {$h_i$};
+ \draw[black!45,line width=0.8pt] (5,0) -- (5,1);
+ \node[font=\scriptsize,text=black!70] at (5,-0.18) {$N$};
+ \node[font=\scriptsize,text=black!70] at (2.5,-0.18) {$N/2$};
+ \draw[dashed,black!45] (0,1) -- (5.6,1);
+ \node[font=\scriptsize,text=black!70] at (5.75,1.05) {$1$};
+ % 公平局：直线 i/N
+ \draw[black!70,line width=1.1pt] (0,0) -- (5,1);
+ \node[font=\scriptsize,text=black!70] at (3.3,0.86) {$p=\tfrac12$：$\dfrac{i}{N}$};
+ % 有偏局 p=0.45：h_i=(r^i-1)/(r^N-1)，r=11/9，N=5，r^N-1=1.72735
+ \draw[domain=0:5,smooth,variable=\t,samples=120,blue!60!black,line width=1.1pt]
+ plot ({\t},{(pow(1.22222,\t)-1)/1.72735});
+ \foreach \t in {0,1,2,3,4,5}
+ \fill[blue!60!black] (\t,{(pow(1.22222,\t)-1)/1.72735}) circle (1.1pt);
+ \node[font=\scriptsize,text=blue!55!black,align=left] at (1.05,0.52)
+ {$p=0.45$：$\frac{1-r^{i}}{1-r^{N}}$，$r=\frac{q}{p}$};
 \end{tikzpicture}
 \end{center}
 
-图上两条线的落差就是庄家的抽水。有偏那条压在直线下方，而且是\emph{凸}的：钱越少，离目标越渺茫；越接近目标，曲线越陡——最后一块钱比前四块钱加起来还值钱。
+图上两条线的落差就是庄家的抽水。有偏那条压在直线下方，而且是\emph{凸}的：钱越少，离目标越渺茫；越接近目标，曲线越陡——最后一块钱比前四块钱加起来还值钱。（画的是 $N=5$、$p=0.45$，即 $r=\frac{11}{9}$；凸性是 $r>1$ 的通则，不是这几个参数碰巧。）
 
 \begin{corollary}[赌场没有尽头]
 固定本金 $i$，让目标 $N\to\infty$：
@@ -287,7 +306,7 @@ p>q\ \text{时}\ h_i\longrightarrow 1-\Big(\frac{q}{p}\Big)^{i}>0 .
 \]
 \end{corollary}
 
-公平局里 $h_i=\frac iN$ 随 $N$ 变平，目标推到无穷远，胜算就摊成零——「一直玩下去」在公平赌局里也救不了你，更别说 $p<q$。只有 $p>q$ 那条极限 $1-(q/p)^i$ 是正的，而且它跟 $N$ 无关：优势在手，无限赌场里也有一条明确的活命概率。三行的差别，全在 $r$ 大于 $1$ 还是小于 $1$。
+公平局里 $h_i=\frac iN$ 随 $N$ 变平，目标推到无穷远，胜算就摊成零——「一直玩下去」在公平赌局里也救不了你。$p<q$ 时 $r>1$，$\frac{1-r^i}{1-r^N}$ 的分子固定、分母发散，同样归零；而 $p>q$ 时 $r<1$，分母趋于 $1$，留下 $1-r^{\,i}>0$，而且它跟 $N$ 无关：优势在手，无限赌场里也有一条明确的活命概率。三行的差别，全在 $r$ 大于 $1$ 还是小于 $1$。
 
 \subsection{同一个定理的第二次证明：鞅}
 
@@ -310,6 +329,12 @@ E[S_{n+1}\mid\mathcal{F}_n]=S_n+E[\text{第 }n+1\text{ 局}]=S_n+0=S_n .
 \end{proposition}
 
 证明思路：把 $M_{T\wedge n}-M_0$ 拆成一局一局的增量之和，停时的定义保证每一局「是否下这一注」只取决于过去，于是每个增量条件期望为零，逐局取期望即得。这里 $T\wedge n$ 有界，一切期望都合法，不需要额外的可积性论证。
+
+\begin{remark}[从 $T\wedge n$ 到 $T$，这一步不是免费的]
+命题只给 $E[M_{T\wedge n}]=E[M_0]$。要把 $n\to\infty$ 挪到期望里面去，得有一个不依赖 $n$ 的可积控制条件，最常见的两种是：$\{M_{T\wedge n}\}$ 一致有界（本节的 $S$ 被压在 $[0,N]$ 里、$r^{S_{T\wedge n}}$ 被压在两个端点之间，都属于这种），或者一致可积。少了这一条，$E[M_T]=E[M_0]$ 可以彻底失效——最简单的反例是公平局从 $1$ 元起步、不设上限 $N$，一直赌到输光：$T<\infty$ 几乎必然，$M_T=0$，于是 $E[M_T]=0\ne1=E[M_0]$。本节两次取极限都靠吸收壁提供了那界，这个便宜不能白占。
+
+顺带把「过程一定停」也交代了：$0<p<1$ 时，任意长度为 $N$ 的窗口里全赢或全输的概率是 $p^N+q^N>0$，按窗口分段看，$P(T>kN)\le(1-p^N-q^N)^k\to0$，故 $T<\infty$ 几乎必然。
+\end{remark}
 
 把 $T$ 取成破产时间（第一次到达 $\{0,N\}$）。$|S_{T\wedge n}|\le N$ 一致有界，由控制收敛定理，$E[S_{T\wedge n}]=i$ 令 $n\to\infty$ 得 $E[S_T]=i$。而 $S_T$ 只取两个值，故
 \[
@@ -337,8 +362,8 @@ h_i=\frac{r^{\,i}-1}{r^{\,N}-1}.
 两次证明是同一条性质的两次使用。「内部值等于邻居平均」往短处用，是一步递推，得到差分方程；往长处用，是「任意停时之后的期望不变」，得到鞅。前者要你会解方程，后者要你会挑鞅（$S_n$ 与 $r^{S_n}$，一个对应加法漂移、一个对应乘法漂移）。鞅证法还留了个便宜的彩头：$T<\infty$ 几乎必然、以及一般状态空间上的推广，都不用重来一遍。
 \end{remark}
 
-\begin{remark}[顺手记下三条边界]
-一、停时必须检查。$E[M_T]=E[M_0]$ 不是免费的，本章两次都靠「$S$ 被压在 $[0,N]$ 里」提供了控制变量；鞅 $S_n$ 不加停时地跑向无穷，就没有这个便宜可占。二、有偏局的鞅是 $S_n-n(p-q)$（减法漂移）或 $r^{S_n}$（乘法漂移），直接拿 $S_n$ 当鞅是最常见的手滑。三、$\mathcal{L}h=0$ 只在\emph{内部}成立，边界上是条件而不是结论——把 $i=0$ 或 $i=N$ 代进递推式，会得到一句废话。
+\begin{remark}[顺手记下四条边界]
+一、停时必须检查。$E[M_T]=E[M_0]$ 不是免费的，本章两次都靠「$S$ 被压在 $[0,N]$ 里」提供了控制变量；鞅 $S_n$ 不加停时地跑向无穷，就没有这个便宜可占（上一条注里那个不设上限的反例就是它）。二、有偏局的鞅是 $S_n-n(p-q)$（减法漂移）或 $r^{S_n}$（乘法漂移），直接拿 $S_n$ 当鞅是最常见的手滑。三、$\mathcal{L}h=0$ 只在\emph{内部}成立，边界上是条件而不是结论——把 $i=0$ 或 $i=N$ 代进递推式，会得到一句废话。四、通式里的 $r=q/p$ 要求 $p\ne0$；$p=0$ 或 $p=1$ 这两个退化情形请回到模型那节直接读结论，别把 $r=0$ 或 $r=\infty$ 硬塞进分式。
 \end{remark}
 
 \subsection{本章容易踩的地方}
@@ -354,3 +379,5 @@ h_i=\frac{r^{\,i}-1}{r^{\,N}-1}.
 第五，赌徒破产里把 $\frac iN$ 用到 $p\ne q$ 上。有偏局的解是 $\frac{1-r^i}{1-r^N}$，而且 $N\to\infty$ 的极限行为由 $r$ 与 $1$ 的大小决定：$p\le q$ 归零，$p>q$ 才留下正的概率。
 
 第六，条件期望的递推式在吸收态上不成立。$h_0=0$、$h_N=1$ 是给定的条件，不是解出来的结果；极值原理那段全靠这个区分才站得住。
+
+第七，以为本章的条件期望就是条件期望的全部。投影这个定义只覆盖 $X\in L^2$；一阶可积的情形走 Radon--Nikodym 那条路，塔性质照用，但最佳逼近、勾股分解、全方差公式都得先有二阶矩才写得出来。
