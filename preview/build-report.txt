@@ -1,0 +1,9 @@
+commit: 636e70f827a75288a1104ab346776e62d1c6af29
+compile outcome: success
+
+---- pdf ----
+-rw-r--r-- 1 root root 656044 Nov 17 01:38 Probability_zh.pdf
+
+---- LaTeX 报错行 ----
+== Probability_zh.log ==
+(没匹配到以 ! 开头的报错行)
